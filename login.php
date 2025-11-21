@@ -1,5 +1,15 @@
 <?php
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
 require_once 'includes/config.php';
+
+// Vérifier si la base de données existe
+if (!checkDatabaseExists()) {
+    header('Location: install.php');
+    exit;
+}
+
 require_once 'includes/auth.php';
 require_once 'includes/functions.php';
 

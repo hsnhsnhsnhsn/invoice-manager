@@ -1,15 +1,26 @@
 <?php
+/**
+ * Version sécurisée de index.php qui ne plante pas si la BDD n'existe pas
+ */
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-require_once 'includes/config.php';
+// Vérifier si la base de données existe avant de charger les includes
+$config_file = 'includes/config.php';
+if (!file_exists($config_file)) {
+    die('Fichier de configuration manquant. Vérifiez que includes/config.php existe.');
+}
 
-// Vérifier si la base de données existe avant de continuer
+require_once $config_file;
+
+// Vérifier si la base de données existe
 if (!checkDatabaseExists()) {
+    // Rediriger vers la page d'installation
     header('Location: install.php');
     exit;
 }
 
+// Maintenant charger les autres fichiers
 require_once 'includes/auth.php';
 require_once 'includes/functions.php';
 
@@ -154,3 +165,4 @@ include 'includes/header.php';
 </div>
 
 <?php include 'includes/footer.php'; ?>
+

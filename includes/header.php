@@ -3,8 +3,15 @@ require_once __DIR__ . '/config.php';
 require_once __DIR__ . '/auth.php';
 require_once __DIR__ . '/functions.php';
 
-$currentUser = getCurrentUser();
-$currentLang = getCurrentLanguage();
+// Récupérer les infos utilisateur et langue de manière sécurisée
+try {
+    $currentUser = getCurrentUser();
+    $currentLang = getCurrentLanguage();
+} catch (Exception $e) {
+    // En cas d'erreur, valeurs par défaut
+    $currentUser = null;
+    $currentLang = 'fr';
+}
 ?>
 <!DOCTYPE html>
 <html lang="<?php echo $currentLang; ?>">

@@ -11,8 +11,8 @@ ini_set('display_errors', 1);
 // Configuration de base de données (à modifier selon votre environnement)
 $DB_HOST = 'localhost';
 $DB_NAME = 'invoice_generator';
-$DB_USER = 'root';
-$DB_PASS = '';
+$DB_USER = 'devadmin';
+$DB_PASS = '8Rgrw9Lg~ai_bF5r';
 
 // Vérifier si l'installation a déjà été effectuée
 if (file_exists('includes/config.php')) {

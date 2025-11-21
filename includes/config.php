@@ -36,12 +36,18 @@ date_default_timezone_set(APP_TIMEZONE);
 
 // Démarrer la session si elle n'est pas déjà démarrée
 if (session_status() === PHP_SESSION_NONE) {
-    session_start();
+    @session_start();
 }
 
 // Connexion à la base de données
 function getDBConnection() {
     static $pdo = null;
+    static $connection_failed = false;
+    
+    // Si la connexion a déjà échoué, ne pas réessayer
+    if ($connection_failed) {
+        return null;
+    }
     
     if ($pdo === null) {
         try {
@@ -53,7 +59,11 @@ function getDBConnection() {
             ];
             $pdo = new PDO($dsn, DB_USER, DB_PASS, $options);
         } catch (PDOException $e) {
-            die("Erreur de connexion à la base de données : " . htmlspecialchars($e->getMessage()));
+            $connection_failed = true;
+            // Ne pas afficher l'erreur immédiatement, laisser les pages se charger
+            // L'erreur sera gérée par les pages qui en ont besoin
+            error_log("Erreur de connexion BDD: " . $e->getMessage());
+            return null;
         }
     }
     

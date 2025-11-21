@@ -28,9 +28,18 @@ function getCurrentUser() {
     }
     
     $pdo = getDBConnection();
-    $stmt = $pdo->prepare("SELECT id, email, name, created_at FROM users WHERE id = ?");
-    $stmt->execute([getUserId()]);
-    return $stmt->fetch();
+    if (!$pdo) {
+        return ['id' => getUserId(), 'email' => $_SESSION['user_email'] ?? '', 'name' => $_SESSION['user_name'] ?? ''];
+    }
+    
+    try {
+        $stmt = $pdo->prepare("SELECT id, email, name, created_at FROM users WHERE id = ?");
+        $stmt->execute([getUserId()]);
+        return $stmt->fetch();
+    } catch (PDOException $e) {
+        // En cas d'erreur, retourner les infos de session
+        return ['id' => getUserId(), 'email' => $_SESSION['user_email'] ?? '', 'name' => $_SESSION['user_name'] ?? ''];
+    }
 }
 
 /**

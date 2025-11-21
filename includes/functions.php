@@ -10,15 +10,31 @@ require_once __DIR__ . '/config.php';
  */
 function t($key, $lang = null) {
     if ($lang === null) {
-        $lang = $_SESSION['language'] ?? 'fr';
+        $lang = isset($_SESSION['language']) ? $_SESSION['language'] : 'fr';
     }
     
-    $pdo = getDBConnection();
-    $stmt = $pdo->prepare("SELECT $lang FROM translations WHERE `key` = ?");
-    $stmt->execute([$key]);
-    $result = $stmt->fetch();
+    // Si la base de données n'est pas disponible, retourner la clé
+    if (!function_exists('getDBConnection')) {
+        return $key;
+    }
     
-    return $result ? $result[$lang] : $key;
+    try {
+        $pdo = getDBConnection();
+        if (!$pdo) {
+            return $key;
+        }
+        $stmt = $pdo->prepare("SELECT $lang FROM translations WHERE `key` = ?");
+        $stmt->execute([$key]);
+        $result = $stmt->fetch();
+        
+        return $result ? $result[$lang] : $key;
+    } catch (PDOException $e) {
+        // Si la base de données n'existe pas encore, retourner la clé
+        return $key;
+    } catch (Exception $e) {
+        // En cas d'erreur quelconque, retourner la clé
+        return $key;
+    }
 }
 
 /**
