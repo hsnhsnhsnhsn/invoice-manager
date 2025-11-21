@@ -1,0 +1,43 @@
+# Protection des fichiers sensibles
+<FilesMatch "^(config\.php|\.htaccess|composer\.(json|lock))$">
+    Order allow,deny
+    Deny from all
+</FilesMatch>
+
+# Protection du dossier uploads
+<Directory "uploads">
+    Options -Indexes
+    <FilesMatch "\.(php|php3|php4|php5|phtml|pl|py|jsp|asp|sh|cgi)$">
+        Order allow,deny
+        Deny from all
+    </FilesMatch>
+</Directory>
+
+# Protection du dossier includes
+<Directory "includes">
+    Options -Indexes
+    <FilesMatch "\.php$">
+        Order allow,deny
+        Allow from all
+    </FilesMatch>
+</Directory>
+
+# Réécriture d'URL (optionnel)
+RewriteEngine On
+RewriteBase /
+
+# Rediriger vers index.php si le fichier n'existe pas
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.php [QSA,L]
+
+# Désactiver l'affichage des erreurs PHP en production
+php_flag display_errors Off
+php_flag log_errors On
+
+# Sécurité
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>
